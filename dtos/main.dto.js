@@ -16,8 +16,8 @@ const mainDtos = {
     priority: Joi.string().valid('lowest', 'low', 'medium', 'high', 'highest').required(),
     path: Joi.string().required(),
     message: Joi.string().required(),
-    request: Joi.string().required(),
-    response: Joi.string().required(),
+    request: Joi.object({ data: Joi.any().required() }).required(),
+    response: Joi.object({ data: Joi.any().required() }).required(),
   }).required(),
 
   info: Joi.string().custom(isObjectId).required(),
@@ -29,8 +29,8 @@ const mainDtos = {
     priority: Joi.string().valid('lowest', 'low', 'medium', 'high', 'highest').optional(),
     path: Joi.string().optional(),
     message: Joi.string().optional(),
-    request: Joi.string().optional(),
-    response: Joi.string().optional(),
+    request: Joi.object({ data: Joi.any().required() }).optional(),
+    response: Joi.object({ data: Joi.any().required() }).optional(),
   }).required(),
 
   delete: Joi.string().custom(isObjectId).required(),

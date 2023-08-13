@@ -82,8 +82,8 @@ class AuthorizationController {
         path: error.stack,
         priority: 'high',
         type: 'error',
-        request: `POST /api/token`,
-        response: message,
+        request: { data: { route: 'POST /api/auth/token' } },
+        response: { data: { message } },
       });
 
       return res.status(500).json({

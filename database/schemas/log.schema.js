@@ -7,8 +7,8 @@ const logsSchema = new Schema({
   priority: { type: String, enum: ['lowest', 'low', 'medium', 'high', 'highest'] },
   path: { type: String },
   message: { type: String },
-  request: { type: Object },
-  response: { type: Object },
+  request: { data: { type: Schema.Types.Mixed } },
+  response: { data: { type: Schema.Types.Mixed } },
   created_at: { type: Date, default: Date.now() },
   updated_at: { type: Date, default: Date.now() },
 });
