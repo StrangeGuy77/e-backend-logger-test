@@ -4,9 +4,9 @@ const joi = require('joi');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
-const authorizationsSchema = require('../database/schemas/authorizations');
-const applicationsSchema = require('../database/schemas/applications');
-const logsSchema = require('../database/schemas/log');
+const authorizationsSchema = require('../database/schemas/authorizations.schema');
+const applicationsSchema = require('../database/schemas/applications.schema');
+const logsSchema = require('../database/schemas/log.schema');
 
 const generateToken = (applicationId) => {
   const secret = process.env.JWT_SECRET;
