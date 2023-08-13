@@ -1,8 +1,9 @@
 'use strict';
 
-const joi = require('joi');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+
+const { getTokenDto } = require('../dtos/authorization.dto');
 
 const authorizationsSchema = require('../database/schemas/authorizations.schema');
 const applicationsSchema = require('../database/schemas/applications.schema');
@@ -16,21 +17,11 @@ const generateToken = (applicationId) => {
 };
 
 const validatePayload = (body) => {
-  return joi
-    .object({
-      applicationId: joi.string().custom((value, helper) => {
-        if (!mongoose.isValidObjectId(value)) {
-          return helper.message('applicationId is not a valid ObjectId');
-        }
-
-        return true;
-      }),
-    })
-    .validate(body);
+  return getTokenDto.validate(body);
 };
 
 class AuthorizationController {
-  async getToken(req, res, next) {
+  async getToken(req, res) {
     try {
       const result = validatePayload(req.body);
 
@@ -54,14 +45,17 @@ class AuthorizationController {
       const alreadyInDb = await authorizationsSchema.findOne({ application_id: applicationId }).exec();
 
       if (alreadyInDb) {
-        // Validate token in db has not expired.
-        const isValidToken = jwt.verify(alreadyInDb.token, process.env.JWT_SECRET);
+        try {
+          // Validate token in db has not expired. The verify method throws when a token is expired.
+          jwt.verify(alreadyInDb.token, process.env.JWT_SECRET);
 
-        if (isValidToken) {
           return res.status(200).json({
             message: 'Successfully authenticated',
             token: alreadyInDb.token,
           });
+        } catch (error) {
+          // Delete expired token
+          authorizationsSchema.deleteOne({ application_id: applicationId }).exec();
         }
       }
 
@@ -79,7 +73,6 @@ class AuthorizationController {
       });
     } catch (error) {
       const errorId = new mongoose.Types.ObjectId();
-      console.log({ errorId });
       const message = `An error has occurred while trying to get a new token. Contact support with the following code: ${errorId}`;
 
       logsSchema.create({
