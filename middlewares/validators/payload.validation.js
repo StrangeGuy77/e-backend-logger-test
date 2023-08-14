@@ -28,7 +28,6 @@ class PayloadValidationMiddleware {
   }
 
   update(req, res, next) {
-    // Id is sent to validate along with the rest of the body to avoid further validations and checkings
     const result = mainDtos.update.validate({
       id: req.params.id,
       ...req.body,
